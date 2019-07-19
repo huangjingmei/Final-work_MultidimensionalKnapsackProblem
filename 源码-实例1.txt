@@ -1,0 +1,117 @@
+package bagtest;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class BagValue {
+	static int result =0;//存放总约束的值
+	static int result1 =0;//存放第一个属性值
+
+
+    static List<Integer> TheSum = new ArrayList<>();
+    static List<List<Integer>> list=new ArrayList<>(); 
+    static List<List<Integer>> list1=new ArrayList<>();
+    
+	public static void main(String[] args) {
+	
+         int[] bv= {100,600,1200,2400,500,2000};
+         
+////		int[] bv= {100,220,90,400,300,400,205,120,160,580,400,140,100,1300,650};
+         
+         int[] limit= {80,96,20,36,44,48,10,18,22,24};
+         
+////		int[] limit= {550,700,130,240,280,310,110,205,260,275};
+   
+         int [][]a={{8,12,13,64,22,41},{8,12,13,75,22,41},{3,6,4,18,6,4},
+ 				{5,10,8,32,6,12},{5,13,8,48,6,20},{0,0,0,0,8,0},
+		     	{3,0,4,0,8,0},{3,0,4,0,8,0},{3,2,4,0,8,4},{3,2,4,8,8,4}};//存储6个背包的10个属性
+         
+//// 	int [][]a={{8,24,13,80,70,80,45,15,28,90,130,32,20,120,40},
+////		 	{8,44,13,100,100,90,75,25,28,120,130,32,40,160,40},
+////		 	{3,6,4,20,20,30,8,3,12,14,40,6,3,20,5},
+////		 	{5,9,6,40,30,40,16,5,18,24,60,16,11,30,25},
+////			{5,11,7,50,40,40,19,7,18,29,70,21,17,30,25},
+////			{5,11,7,55,40,40,21,9,18,29,70,21,17,35,25},
+////			{0,0,1,10,4,10,0,6,0,6,32,3,0,70,10},
+////			{3,4,5,20,14,20,6,12,10,18,42,9,12,100,20},
+////			{3,6,9,30,29,20,12,12,10,30,42,18,18,110,20},
+////			{3,8,9,35,29,20,16,15,10,30,42,20,18,120,20}};
+         
+		 int[] bs = new int[a[0].length];//保存二维数组中每行属性的值
+		 int[] bb = new int[a[0].length];
+		 int b=0;
+		 int count = 0;
+		        
+	        for(int j=0;j<a.length;j++){
+	    		for(int i=0;i<a[0].length;i++){
+	    			bs[i]=a[j][i];
+	    			
+	    			if(j==1) {
+	    		
+	    				bb[i]=a[j-1][i];//保存该实例属性集合的第一行的属性值
+	    			}
+	    			
+	    			
+	    		}
+	    		
+	    		
+	    		if(j==1) {
+	    			result1=limit[j-1];
+	    			list1 = count(bb, 0, -1, result1);//用一个集合 保存所有符合第一个总约束条件的背包下标
+	    		
+	    		}
+	    		
+	    		result=limit[j];
+	    		list = count(bs, 0, -1, result);//用集合保存满足各个属性符合总约束条件的背包下标
+	    		
+	    		if(j>0&&j<a.length-1) {  //对所有符合总约束条件的背包集合进行求交集，求出符合约束条件的背包的集合
+	    			list1.retainAll(list);
+	    		
+	    		}
+	    	
+	    		}
+        System.out.println(list1);//输出符合所有约束条件的集合
+        //根据各个子集计算相应的背包价值
+	        for(List<Integer> z:list1){
+	            for(Integer i:z){               	
+	            	b=b+bv[i];
+	            }
+	            TheSum.add(b);
+	          
+	            b=0;  
+	        }
+	    System.out.println("该实例的最大值为："+Collections.max(TheSum));
+	        System.out.println("\n");
+	}
+	
+	
+	
+	
+	    public static List<List<Integer>> count(int[] es, int sum, int currIndex, int result){
+	        List<List<Integer>> indexLink = new ArrayList<>();
+	        int b=0;
+	        for(int i=currIndex+1; i<es.length; i++){
+	            int s = es[i]+sum;
+	            if(s <=result){
+	                List<List<Integer>> iLink = count(es, s, i, result);
+
+	                for(List list:iLink){
+	                    list.add(0,i);    
+	                }
+
+	                if(iLink.size() > 0){
+	                    indexLink.addAll(iLink);   
+	                }
+	                
+	                List<Integer> list = new ArrayList<>();
+	                list.add(i);
+	                indexLink.add(list);
+	            }
+	   
+	        }
+
+	        return indexLink;
+	    }
+
+}

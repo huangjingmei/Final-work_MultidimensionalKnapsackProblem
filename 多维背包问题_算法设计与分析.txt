@@ -1,0 +1,86 @@
+一、题目分析
+    该多维背包问题给出了7个实例，每个实例中定义了背包个数、背包的属性个数、每个背包的价值、背包的所有属性值、每个属性总的约束条件，我们需要根据所给的实例数据，设计相应算法，求出满足所有约束条件的背包的最大价值。
+
+二、算法设计与分析
+    我使用JAVA语言来设计算法，运用集合法来找出最优解。首先用一个二维数组来存储所有的背包属性；然后对各个属性进行遍历、判断，先找出满足第一个属性约束条件的背包组合，把所有符合总约束条件的背包下标存放在一个集合里，接着找出满足第二个属性约束条件的背包组合，把符合总约束条件的背包下标也存放在一个集合里，然后求出满足第二个属性约束条件的集合和满足第一个属性约束条件的集合的交集，接下来找出符合第三个属性约束条件的集合，再把这个集合同前面第一、第二个属性的交集进行求交集，以此类推，不断进行交集，最后得到的那个交集就是符合所有约束条件的背包下标，由此，计算出它们的价值即可。这里以第一个实例作为例子：
+
+public static void main(String[] args) {
+	
+ int[] bv= {100,600,1200,2400,500,2000};
+ int [][]a={{8,12,13,64,22,41},{8,12,13,75,22,41},{3,6,4,18,6,4},{5,10,8,32,6,12},{5,13,8,48,6,20},{0,0,0,0,8,0},{3,0,4,0,8,0},{3,0,4,0,8,0},{3,2,4,0,8,4},{3,2,4,8,8,4}};//存储6个背包的10个属性
+int[] bs = new int[a[0].length];//保存二维数组中每行属性的值
+		 int[] bb = new int[a[0].length];//
+		 int b=0;
+		 int count = 0;
+		        
+	        for(int j=0;j<a.length;j++){
+	    		for(int i=0;i<a[0].length;i++){
+	    			bs[i]=a[j][i];
+	    			
+	    			if(j==1) {
+	    		
+	    				bb[i]=a[j-1][i];//保存该实例属性集合的第一行的属性值
+	    			}
+	    			
+	    			
+	    		}
+	    		
+	    		
+	    		if(j==1) {
+	    			result1=limit[j-1];
+	    			list1 = count(bb, 0, -1, result1);//用一个集合 保存所有符合第一个总约束条件的背包下标
+	    		
+	    		}
+	    		
+	    		result=limit[j];
+	    		list = count(bs, 0, -1, result);//用集合保存满足各个属性符合总约束条件的背包下标
+	    		
+	    		if(j>0&&j<a.length-1) {  //对所有符合总约束条件的背包集合进行求交集，求出所有属性共同符合约束条件的背包的集合
+	    			list1.retainAll(list);
+	    		
+	    		}
+	    	
+	    		}
+        System.out.println(list1);//输出符合条件的总集合
+        //根据各个子集计算相应的背包价值
+	        for(List<Integer> z:list1){
+	            for(Integer i:z){               	
+	            	b=b+bv[i];
+	            }
+	            TheSum.add(b);
+	          
+	            b=0;  
+	        }
+	    System.out.println("该实例的最大值为："+Collections.max(TheSum));
+	        System.out.println("\n");
+	}
+
+
+求交集的主要算法：
+ public static List<List<Integer>> count(int[] es, int sum, int currIndex, int result){
+	        List<List<Integer>> indexLink = new ArrayList<>();
+	        int b=0;
+	        for(int i=currIndex+1; i<es.length; i++){
+	            int s = es[i]+sum;
+	            if(s <=result){
+	                List<List<Integer>> iLink = count(es, s, i, result);
+
+	                for(List list:iLink){
+	                    list.add(0,i);    
+	                }
+
+	                if(iLink.size() > 0){
+	                    indexLink.addAll(iLink);   
+	                }
+	                
+	                List<Integer> list = new ArrayList<>();
+	                list.add(i);
+	                indexLink.add(list);
+	            }
+	   
+	        }
+
+	        return indexLink;
+	    }
+
+该算法的时间复杂度为n^2。
